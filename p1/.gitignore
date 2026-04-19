@@ -16,6 +16,7 @@ start.*
 
 # Dependencies and generated cache
 vendor/
+vendor/*
 
 # OS files
 .DS_Store
