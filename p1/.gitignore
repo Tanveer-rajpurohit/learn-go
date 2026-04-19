@@ -1,0 +1,22 @@
+.vscode/
+.idea/
+
+# Local environment files
+.env
+.env.local
+.env.production
+
+# Go build / run outputs
+tmp/
+bin/
+start.*
+*.exe
+*.test
+*.out
+
+# Dependencies and generated cache
+vendor/
+
+# OS files
+.DS_Store
+Thumbs.db
