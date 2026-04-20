@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Tanveer-rajpurohit/p2/internal/config"
 	"github.com/Tanveer-rajpurohit/p2/internal/routes"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -12,12 +13,15 @@ import (
 )
 
 func main() {
-	godotenv.Load() 
+	godotenv.Load()
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "8080"
 	}
-	
+
+	pool := config.ConnectDB()
+	defer pool.Close()
+
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -38,8 +42,11 @@ func main() {
 	}
 
 	log.Printf("Server starting on port %v", PORT)
+
 	err := srv.ListenAndServe()
-	if err != nil {
+	if err != nil && err != http.ErrServerClosed {
 		log.Fatal("Failed to start server : ", err)
 	}
+
+	log.Printf("Server stopped gracefully")
 }
