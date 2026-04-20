@@ -23,6 +23,9 @@ func main() {
 	pool := config.ConnectDB()
 	defer pool.Close()
 
+	rdb := config.ConnectRedis()
+	defer rdb.Close()
+
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -34,7 +37,7 @@ func main() {
 	}))
 
 	v1router := chi.NewRouter()
-	routes.SetupRouter(v1router, db.New(pool))
+	routes.SetupRouter(v1router, db.New(pool), rdb)
 	router.Mount("/api/v1", v1router)
 
 	srv := &http.Server{
