@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 
+	uuid "github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -18,7 +19,7 @@ RETURNING id, user_id, status, raw_url, original_width, original_height, target_
 `
 
 type CreateMediaAssetParams struct {
-	UserID     pgtype.UUID `json:"user_id"`
+	UserID     uuid.UUID   `json:"user_id"`
 	TargetSize string      `json:"target_size"`
 	RawUrl     pgtype.Text `json:"raw_url"`
 }
@@ -49,7 +50,7 @@ const getMediaAsset = `-- name: GetMediaAsset :one
 SELECT id, user_id, status, raw_url, original_width, original_height, target_size, variant_sd, variant_hd, variant_raw, retry_count, error_message, created_at, updated_at FROM media_assets WHERE id = $1
 `
 
-func (q *Queries) GetMediaAsset(ctx context.Context, id pgtype.UUID) (MediaAsset, error) {
+func (q *Queries) GetMediaAsset(ctx context.Context, id uuid.UUID) (MediaAsset, error) {
 	row := q.db.QueryRow(ctx, getMediaAsset, id)
 	var i MediaAsset
 	err := row.Scan(
@@ -82,7 +83,7 @@ WHERE id = $1
 `
 
 type UpdateMediaFailedParams struct {
-	ID           pgtype.UUID `json:"id"`
+	ID           uuid.UUID   `json:"id"`
 	ErrorMessage pgtype.Text `json:"error_message"`
 }
 
@@ -96,8 +97,8 @@ UPDATE media_assets SET status = $2, updated_at = NOW() WHERE id = $1
 `
 
 type UpdateMediaStatusParams struct {
-	ID     pgtype.UUID `json:"id"`
-	Status string      `json:"status"`
+	ID     uuid.UUID `json:"id"`
+	Status string    `json:"status"`
 }
 
 func (q *Queries) UpdateMediaStatus(ctx context.Context, arg UpdateMediaStatusParams) error {
@@ -118,7 +119,7 @@ RETURNING id, user_id, status, raw_url, original_width, original_height, target_
 `
 
 type UpdateMediaVariantsParams struct {
-	ID         pgtype.UUID `json:"id"`
+	ID         uuid.UUID   `json:"id"`
 	VariantSd  pgtype.Text `json:"variant_sd"`
 	VariantHd  pgtype.Text `json:"variant_hd"`
 	VariantRaw pgtype.Text `json:"variant_raw"`

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Tanveer-rajpurohit/p2/internal/config"
+	"github.com/Tanveer-rajpurohit/p2/internal/db"
 	"github.com/Tanveer-rajpurohit/p2/internal/routes"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -33,7 +34,7 @@ func main() {
 	}))
 
 	v1router := chi.NewRouter()
-	routes.SetupRouter(v1router)
+	routes.SetupRouter(v1router, db.New(pool))
 	router.Mount("/api/v1", v1router)
 
 	srv := &http.Server{

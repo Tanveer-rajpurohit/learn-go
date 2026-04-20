@@ -8,6 +8,7 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = "./tmp/main"
+  pre_cmd = ["migrate -path db/migrations -database \"postgres://postgres:Tanveer@localhost:5432/go_p2?sslmode=disable\" up"]
   cmd = "go build -o ./tmp/main ./cmd/server"
   delay = 1000
   entrypoint = ["./tmp/main"]
@@ -26,7 +27,6 @@ tmp_dir = "tmp"
   poll = false
   poll_interval = 0
   post_cmd = []
-  pre_cmd = []
   rerun = false
   rerun_delay = 500
   send_interrupt = false
@@ -39,7 +39,7 @@ tmp_dir = "tmp"
     entrypoint = ["tmp\\main.exe"]
     full_bin = ""
     post_cmd = []
-    pre_cmd = []
+    pre_cmd = ["migrate -path db/migrations -database \"postgres://postgres:Tanveer@localhost:5432/go_p2?sslmode=disable\" up"]
 
 [color]
   app = ""

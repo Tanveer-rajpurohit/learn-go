@@ -8,13 +8,13 @@ import (
 )
 
 type Claims struct {
-	UserID int32  `json:"user_id"`
+	UserID string `json:"user_id"`
 	Role   string `json:"role"`
 	Email  string `json:"email"`
 	jwt.RegisteredClaims
 }
 
-func GenerateAccessToken(userID int32, role, email string) (string, error) {
+func GenerateAccessToken(userID string, role, email string) (string, error) {
 	claims := Claims{
 		UserID: userID,
 		Role:   role,
@@ -24,12 +24,11 @@ func GenerateAccessToken(userID int32, role, email string) (string, error) {
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }
 
-
-func GenerateRefreshToken(userID int32, role, email string) (string, error) {
+func GenerateRefreshToken(userID string, role, email string) (string, error) {
 	claims := Claims{
 		UserID: userID,
 		Role:   role,
@@ -38,10 +37,9 @@ func GenerateRefreshToken(userID int32, role, email string) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(os.Getenv("JWT_REFRESH_SECRET")))
 }
-
 
 func ValidateToken(tokenStr string, isRefresh bool) (*Claims, error) {
 	secret := os.Getenv("JWT_SECRET")
@@ -49,7 +47,7 @@ func ValidateToken(tokenStr string, isRefresh bool) (*Claims, error) {
 		secret = os.Getenv("JWT_REFRESH_SECRET")
 	}
 
-	token, err := jwt.ParseWithClaims(tokenStr,&Claims{},func(t *jwt.Token) (any, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(t *jwt.Token) (any, error) {
 		return []byte(secret), nil
 	})
 	if err != nil || !token.Valid {

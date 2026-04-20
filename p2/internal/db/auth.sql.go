@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 
+	uuid "github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -47,14 +48,14 @@ RETURNING id, user_id, token, expires_at
 `
 
 type SaveRefreshTokenParams struct {
-	UserID    pgtype.UUID      `json:"user_id"`
+	UserID    uuid.UUID        `json:"user_id"`
 	Token     string           `json:"token"`
 	ExpiresAt pgtype.Timestamp `json:"expires_at"`
 }
 
 type SaveRefreshTokenRow struct {
 	ID        int32            `json:"id"`
-	UserID    pgtype.UUID      `json:"user_id"`
+	UserID    uuid.UUID        `json:"user_id"`
 	Token     string           `json:"token"`
 	ExpiresAt pgtype.Timestamp `json:"expires_at"`
 }

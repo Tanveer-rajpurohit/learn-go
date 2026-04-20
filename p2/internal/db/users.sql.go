@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 
+	uuid "github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -24,7 +25,7 @@ type CreateUserWithPasswordParams struct {
 }
 
 type CreateUserWithPasswordRow struct {
-	ID        pgtype.UUID      `json:"id"`
+	ID        uuid.UUID        `json:"id"`
 	Name      string           `json:"name"`
 	Email     string           `json:"email"`
 	Role      string           `json:"role"`
@@ -55,11 +56,11 @@ SELECT id, name, email, password, role FROM users WHERE email = $1
 `
 
 type GetUserByEmailRow struct {
-	ID       pgtype.UUID `json:"id"`
-	Name     string      `json:"name"`
-	Email    string      `json:"email"`
-	Password string      `json:"password"`
-	Role     string      `json:"role"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Email    string    `json:"email"`
+	Password string    `json:"password"`
+	Role     string    `json:"role"`
 }
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
@@ -82,7 +83,7 @@ WHERE id = $1
 `
 
 type GetUserByIDRow struct {
-	ID        pgtype.UUID      `json:"id"`
+	ID        uuid.UUID        `json:"id"`
 	Name      string           `json:"name"`
 	Email     string           `json:"email"`
 	Role      string           `json:"role"`
@@ -92,7 +93,7 @@ type GetUserByIDRow struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 }
 
-func (q *Queries) GetUserByID(ctx context.Context, id pgtype.UUID) (GetUserByIDRow, error) {
+func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
 	row := q.db.QueryRow(ctx, getUserByID, id)
 	var i GetUserByIDRow
 	err := row.Scan(
@@ -118,13 +119,13 @@ RETURNING id, name, email, role, avatar_sd, avatar_hd, avatar_raw, created_at
 `
 
 type UpdateUserParams struct {
-	ID    pgtype.UUID `json:"id"`
+	ID    uuid.UUID   `json:"id"`
 	Name  pgtype.Text `json:"name"`
 	Email pgtype.Text `json:"email"`
 }
 
 type UpdateUserRow struct {
-	ID        pgtype.UUID      `json:"id"`
+	ID        uuid.UUID        `json:"id"`
 	Name      string           `json:"name"`
 	Email     string           `json:"email"`
 	Role      string           `json:"role"`
@@ -161,14 +162,14 @@ RETURNING id, name, email, role, avatar_sd, avatar_hd, avatar_raw, created_at
 `
 
 type UpdateUserAvatarParams struct {
-	ID        pgtype.UUID `json:"id"`
+	ID        uuid.UUID   `json:"id"`
 	AvatarSd  pgtype.Text `json:"avatar_sd"`
 	AvatarHd  pgtype.Text `json:"avatar_hd"`
 	AvatarRaw pgtype.Text `json:"avatar_raw"`
 }
 
 type UpdateUserAvatarRow struct {
-	ID        pgtype.UUID      `json:"id"`
+	ID        uuid.UUID        `json:"id"`
 	Name      string           `json:"name"`
 	Email     string           `json:"email"`
 	Role      string           `json:"role"`

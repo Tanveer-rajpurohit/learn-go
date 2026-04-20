@@ -5,12 +5,13 @@
 package db
 
 import (
+	uuid "github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type MediaAsset struct {
-	ID             pgtype.UUID      `json:"id"`
-	UserID         pgtype.UUID      `json:"user_id"`
+	ID             uuid.UUID        `json:"id"`
+	UserID         uuid.UUID        `json:"user_id"`
 	Status         string           `json:"status"`
 	RawUrl         pgtype.Text      `json:"raw_url"`
 	OriginalWidth  pgtype.Int4      `json:"original_width"`
@@ -27,14 +28,14 @@ type MediaAsset struct {
 
 type RefreshToken struct {
 	ID        int32            `json:"id"`
-	UserID    pgtype.UUID      `json:"user_id"`
+	UserID    uuid.UUID        `json:"user_id"`
 	Token     string           `json:"token"`
 	ExpiresAt pgtype.Timestamp `json:"expires_at"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 }
 
 type User struct {
-	ID        pgtype.UUID      `json:"id"`
+	ID        uuid.UUID        `json:"id"`
 	Name      string           `json:"name"`
 	Email     string           `json:"email"`
 	Password  string           `json:"password"`
