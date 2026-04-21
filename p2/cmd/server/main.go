@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -21,9 +22,17 @@ func main() {
 	}
 
 	pool := config.ConnectDB()
+	// make sure db is connected before starting the server
+	if err := pool.Ping(context.Background()); err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
 	defer pool.Close()
 
 	rdb := config.ConnectRedis()
+	// make sure redis is connected before starting the server
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
+		log.Fatal("Failed to connect to Redis:", err)
+	}
 	defer rdb.Close()
 
 	router := chi.NewRouter()
