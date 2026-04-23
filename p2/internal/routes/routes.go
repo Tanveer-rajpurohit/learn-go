@@ -9,9 +9,10 @@ import (
 	"github.com/Tanveer-rajpurohit/p2/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/redis/go-redis/v9"
+	"github.com/Tanveer-rajpurohit/p2/internal/storage"
 )
 
-func SetupRouter(router *chi.Mux, queries *db.Queries, rdb *redis.Client) {
+func SetupRouter(router *chi.Mux, queries *db.Queries, rdb *redis.Client, s3Client *storage.S3Client) {
 
 	registerLimiter := middleware.NewStore(1*time.Hour, 3); // 3 accounts / hour
 	loginLimiter := middleware.NewStore(10*time.Second, 3); // 3 login attempts / 10 seconds
@@ -29,6 +30,7 @@ func SetupRouter(router *chi.Mux, queries *db.Queries, rdb *redis.Client) {
 	userHandler := &handlers.UserHandler{
 		Q:     queries,
 		Redis: rdb,
+		S3:    s3Client,
 	}
 
 	router.Group(func(r chi.Router) {
@@ -36,7 +38,7 @@ func SetupRouter(router *chi.Mux, queries *db.Queries, rdb *redis.Client) {
 		r.Use(userLimiter.Limit)
 
 		r.Get("/user", userHandler.GetUser)
-		// r.Put("/user/avatar",userHandler.UpdateUserAvatar)
+		r.Put("/user/avatar",userHandler.UpdateUserAvatar)
 		r.Patch("/user/{user_id}", userHandler.UpdateUser)
 	})
 

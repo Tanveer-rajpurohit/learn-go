@@ -9,6 +9,7 @@ import (
 	"github.com/Tanveer-rajpurohit/p2/internal/config"
 	"github.com/Tanveer-rajpurohit/p2/internal/db"
 	"github.com/Tanveer-rajpurohit/p2/internal/routes"
+	"github.com/Tanveer-rajpurohit/p2/internal/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
@@ -35,6 +36,16 @@ func main() {
 	}
 	defer rdb.Close()
 
+	s3Client, err := storage.NewS3Client(
+		os.Getenv("BUCKET_NAME"),
+		os.Getenv("AWS_REGION"),
+		os.Getenv("AWS_ACCESS_KEY_ID"),
+		os.Getenv("AWS_SECRET_ACCESS_KEY"),
+	)
+	if err != nil {
+		log.Fatal("Failed to initialize S3 client:", err)
+	}
+
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -46,7 +57,7 @@ func main() {
 	}))
 
 	v1router := chi.NewRouter()
-	routes.SetupRouter(v1router, db.New(pool), rdb)
+	routes.SetupRouter(v1router, db.New(pool), rdb, s3Client)
 	router.Mount("/api/v1", v1router)
 
 	srv := &http.Server{
@@ -56,7 +67,7 @@ func main() {
 
 	log.Printf("Server starting on port %v", PORT)
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		log.Fatal("Failed to start server : ", err)
 	}
